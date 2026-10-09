@@ -1243,6 +1243,17 @@ export const register: Register = on => {
     return next(e)
   })
 
+  // 压缩不经过 turn.complete：主对话压缩完成后稍等记录写入压缩元数据，再重读一次
+  on('session.compact', async ($, e, next) => {
+    const r = await next(e)
+    if (!e.agentId && e.trigger !== 'precompute' && !(r as any)?.skip) {
+      $.clock.after(2000, () => {
+        void refreshIfOpen($)
+      })
+    }
+    return r
+  })
+
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey || lastAt === null) return next(e)
     const t = await $.clock.now()
