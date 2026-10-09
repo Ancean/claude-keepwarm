@@ -24,7 +24,20 @@ Claude Code 的提示缓存闲置约 1 小时后过期，下一次请求要把�
 
 ## 安装
 
-1. 下载本仓库，放到 `~/.claude/skills/keepwarm/`（Windows 为 `C:\Users\<用户名>\.claude\skills\keepwarm\`）：
+### 方式一：插件市场（推荐）
+
+在终端执行下面两条命令，然后新开一个 Claude Code 会话：
+
+```bash
+claude plugin marketplace add https://github.com/Ancean/claude-keepwarm.git
+claude plugin install keepwarm@ancean-plugins
+```
+
+在会话里也可以用 `/plugin marketplace add Ancean/claude-keepwarm` 和 `/plugin install keepwarm@ancean-plugins`；若提示读不到仓库（简写走 SSH），改用上面的 HTTPS 地址。更新：`claude plugin marketplace update ancean-plugins`，再 `claude plugin update keepwarm@ancean-plugins`。
+
+### 方式二：手动放入技能目录
+
+1. 把本仓库放到 `~/.claude/skills/keepwarm/`（Windows 为 `C:\Users\<用户名>\.claude\skills\keepwarm\`）：
 
    ```bash
    git clone https://github.com/Ancean/claude-keepwarm.git ~/.claude/skills/keepwarm
@@ -34,6 +47,8 @@ Claude Code 的提示缓存闲置约 1 小时后过期，下一次请求要把�
 
 2. 重启 Claude 桌面应用或新开一个 Claude Code 会话，插件会以 `keepwarm@skills-dir` 自动加载。
 3. 更新：在该目录下 `git pull`，然后新开会话。
+
+两种方式只能选一种，否则会出现重名，后装的那份不加载。
 
 ## 运行要求
 

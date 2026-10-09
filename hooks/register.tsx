@@ -1145,6 +1145,9 @@ async function initLast($: any) {
 }
 
 async function fireKeepWarm($: any) {
+  // 发出前先记时刻：插件自己的 $.prompt.submit 不一定再经过本插件的 prompt.submit 钩子
+  kwTimes = [...kwTimes, await $.clock.now()].slice(-200)
+  void saveKw($)
   await $.prompt.submit({ text: PROMPT, asUser: true })
 }
 
@@ -1213,8 +1216,10 @@ export const register: Register = on => {
     lastAt = t
     busy = true
     if (e.text === PROMPT) {
-      kwTimes = [...kwTimes, t].slice(-200)
-      void saveKw($)
+      if (!kwTimes.some(k => Math.abs(k - t) < 5000)) {
+        kwTimes = [...kwTimes, t].slice(-200)
+        void saveKw($)
+      }
     } else lastReal = t // 保温请求本身不重置时限
     return next(e)
   })

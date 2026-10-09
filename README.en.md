@@ -26,6 +26,19 @@ The interface text is in Chinese. The screenshots below show the chart pane (lab
 
 ## Install
 
+### Option 1: plugin marketplace (recommended)
+
+Run these in a terminal, then start a new Claude Code session:
+
+```bash
+claude plugin marketplace add https://github.com/Ancean/claude-keepwarm.git
+claude plugin install keepwarm@ancean-plugins
+```
+
+Inside a session you can also use `/plugin marketplace add Ancean/claude-keepwarm` and `/plugin install keepwarm@ancean-plugins`; if the shorthand cannot reach the repository (it goes over SSH), use the HTTPS URL above. To update: `claude plugin marketplace update ancean-plugins`, then `claude plugin update keepwarm@ancean-plugins`.
+
+### Option 2: manual, in the skills directory
+
 1. Clone this repository into `~/.claude/skills/keepwarm/` (on Windows `C:\Users\<you>\.claude\skills\keepwarm\`):
 
    ```bash
@@ -36,6 +49,8 @@ The interface text is in Chinese. The screenshots below show the chart pane (lab
 
 2. Restart the Claude desktop app or start a new Claude Code session. The plugin loads automatically as `keepwarm@skills-dir`.
 3. To update, run `git pull` in that folder and start a new session.
+
+Use only one of the two options; with both, the names clash and the second copy is not loaded.
 
 ## Requirements
 
