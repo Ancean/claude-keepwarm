@@ -1,0 +1,6 @@
+{
+  "name": "keepwarm",
+  "version": "0.8.1",
+  "description": "提示缓存保温：输入框上方显示闲置计时与一键保温，/keepwarm N 接续保温 N 小时（上限 24），图表面板给出上下文、缓存剩余、额度与费用构成",
+  "author": { "name": "Ancean" }
+}
