@@ -1145,10 +1145,17 @@ async function initLast($: any) {
 }
 
 async function fireKeepWarm($: any) {
-  // 发出前先记时刻：插件自己的 $.prompt.submit 不一定再经过本插件的 prompt.submit 钩子
-  kwTimes = [...kwTimes, await $.clock.now()].slice(-200)
+  // 发出前先记时刻：插件自己的 $.prompt.submit 不经过本插件的 prompt.submit 钩子（claude plugin test 实测）
+  const t = await $.clock.now()
+  kwTimes = [...kwTimes, t].slice(-200)
   void saveKw($)
-  await $.prompt.submit({ text: PROMPT, asUser: true })
+  try {
+    await $.prompt.submit({ text: PROMPT, asUser: true })
+  } catch (err) {
+    kwTimes = kwTimes.filter(k => k !== t)
+    void saveKw($)
+    $.ui.toast(`保温请求未发出：${String((err as any)?.message || err).slice(0, 80)}`)
+  }
 }
 
 async function everyMinute($: any) {
@@ -1187,8 +1194,11 @@ export const register: Register = on => {
   on('command.run', { command: 'keepwarm' }, async ($, e) => {
     const arg = e.args.trim().toLowerCase()
     if (arg === '') {
-      void fireKeepWarm($)
-      return { text: '已发送一次保温请求。' }
+      // 命令钩子里直接提交会被宿主拒绝（会等待本钩子占着的回合），改为命令返回后再发
+      $.clock.after(500, () => {
+        void fireKeepWarm($)
+      })
+      return { text: '保温请求将在半秒后发出。' }
     }
     if (arg === 'chart' || arg === '图表') {
       void openChart($)
@@ -1216,6 +1226,7 @@ export const register: Register = on => {
     lastAt = t
     busy = true
     if (e.text === PROMPT) {
+      // 本插件发出的保温已在 fireKeepWarm 记下；这里只接住手动粘贴的同一句提示
       if (!kwTimes.some(k => Math.abs(k - t) < 5000)) {
         kwTimes = [...kwTimes, t].slice(-200)
         void saveKw($)
